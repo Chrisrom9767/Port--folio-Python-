@@ -5,7 +5,7 @@ Projet Python 2 — AFI L2 IR — 2025/2026.
 
 ## 🚀 Démo en ligne
 
-👉 **[Accéder à l'application]([https://votre-app.streamlit.app](https://boa-rag-chatbot-gwfzgap5gaczexn5v6wtf3.streamlit.app/))**
+👉 **[Accéder à l'application](https://votre-app.streamlit.app](https://boa-rag-chatbot-gwfzgap5gaczexn5v6wtf3.streamlit.app/))**
 
 ## 📋 Fonctionnalités
 
