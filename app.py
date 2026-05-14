@@ -19,44 +19,117 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# CSS personnalisé
-st.markdown("""
+# CSS dynamique selon le thème
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
+IS_LIGHT = st.session_state.theme == "light"
+
+# Palette de couleurs
+if IS_LIGHT:
+    C = {
+        "bg": "#ffffff", "bg2": "#f4f4f5", "bg3": "#e4e4e7",
+        "border": "#e4e4e7", "border_h": "#d4d4d8",
+        "text": "#09090b", "text2": "#52525b", "text3": "#a1a1aa",
+        "accent": "#6d5ce7", "accent_bg": "rgba(109,92,231,0.08)",
+        "tag_bg": "rgba(109,92,231,0.1)", "tag_c": "#6d5ce7",
+        "green_bg": "rgba(5,150,105,0.08)", "green_c": "#059669",
+        "acad_bg": "rgba(109,92,231,0.1)", "acad_c": "#6d5ce7",
+        "perso_bg": "rgba(5,150,105,0.08)", "perso_c": "#059669",
+        "pro_bg": "rgba(217,119,6,0.1)", "pro_c": "#d97706",
+        "cbar_bg": "#e4e4e7",
+        "sidebar_bg": "#ffffff", "sidebar_text": "#09090b",
+        "card_bg": "#ffffff", "card_border": "#e4e4e7",
+        "dlabel": "#71717a",
+        "stbg": "#ffffff", "st_sec_bg": "#f4f4f5",
+    }
+else:
+    C = {
+        "bg": "#0e1117", "bg2": "#1a1b2e", "bg3": "#27272a",
+        "border": "#27272a", "border_h": "#3f3f46",
+        "text": "#fafafa", "text2": "#a1a1aa", "text3": "#71717a",
+        "accent": "#7c6cf0", "accent_bg": "rgba(124,108,240,0.15)",
+        "tag_bg": "rgba(124,108,240,0.15)", "tag_c": "#a5b4fc",
+        "green_bg": "rgba(16,185,129,0.12)", "green_c": "#34d399",
+        "acad_bg": "rgba(124,108,240,0.15)", "acad_c": "#a5b4fc",
+        "perso_bg": "rgba(16,185,129,0.12)", "perso_c": "#34d399",
+        "pro_bg": "rgba(245,158,11,0.12)", "pro_c": "#fbbf24",
+        "cbar_bg": "#27272a",
+        "sidebar_bg": "#0e1117", "sidebar_text": "#fafafa",
+        "card_bg": "#18181b", "card_border": "#27272a",
+        "dlabel": "#71717a",
+        "stbg": "#0e1117", "st_sec_bg": "#1a1b2e",
+    }
+
+st.markdown(f"""
 <style>
+    /* ── Forcer le thème sur tout Streamlit ── */
+    .stApp {{ background-color: {C["bg"]}; color: {C["text"]}; }}
+    header[data-testid="stHeader"] {{ background-color: {C["bg"]}; }}
+    section[data-testid="stSidebar"] {{ background-color: {C["sidebar_bg"]}; }}
+    section[data-testid="stSidebar"] * {{ color: {C["sidebar_text"]}; }}
+    section[data-testid="stSidebar"] > div {{ padding-top: 1rem; }}
+
+    .stMarkdown, .stText, .stCaption, p, span, li, td, th, label, h1, h2, h3, h4 {{
+        color: {C["text"]} !important;
+    }}
+
+    /* Inputs */
+    input, textarea, select, .stTextInput input, .stTextArea textarea, .stSelectbox select {{
+        background-color: {C["bg2"]} !important;
+        color: {C["text"]} !important;
+        border-color: {C["border"]} !important;
+    }}
+
+    /* Expanders */
+    details {{ background-color: {C["bg2"]}; border: 1px solid {C["border"]}; border-radius: 8px; }}
+    summary {{ color: {C["text"]} !important; }}
+
+    /* Metrics */
+    [data-testid="stMetric"] {{
+        background: {C["bg2"]}; border: 1px solid {C["border"]};
+        border-radius: 8px; padding: 12px; text-align: center;
+    }}
+    [data-testid="stMetricValue"] {{ color: {C["accent"]} !important; }}
+    [data-testid="stMetricLabel"] {{ color: {C["text3"]} !important; }}
+
+    /* Containers with border */
+    [data-testid="stVerticalBlockBorderWrapper"] {{
+        border-color: {C["border"]} !important;
+        background-color: {C["card_bg"]} !important;
+    }}
+
     /* Tags */
-    .tag { display:inline-block; font-size:0.72rem; font-weight:600; padding:3px 10px;
-           border-radius:14px; background:rgba(124,108,240,0.15); color:#a5b4fc; margin:2px 3px 2px 0; }
-    .tag-green { background:rgba(16,185,129,0.12); color:#34d399; }
+    .tag {{ display:inline-block; font-size:0.72rem; font-weight:600; padding:3px 10px;
+           border-radius:14px; background:{C["tag_bg"]}; color:{C["tag_c"]}; margin:2px 3px 2px 0; }}
+    .tag-green {{ background:{C["green_bg"]}; color:{C["green_c"]}; }}
 
     /* Type badges */
-    .tbadge { display:inline-block; font-size:0.68rem; font-weight:700; padding:2px 9px;
-              border-radius:10px; text-transform:uppercase; letter-spacing:0.03em; }
-    .t-acad { background:rgba(124,108,240,0.15); color:#a5b4fc; }
-    .t-perso { background:rgba(16,185,129,0.12); color:#34d399; }
-    .t-pro { background:rgba(245,158,11,0.12); color:#fbbf24; }
+    .tbadge {{ display:inline-block; font-size:0.68rem; font-weight:700; padding:2px 9px;
+              border-radius:10px; text-transform:uppercase; letter-spacing:0.03em; }}
+    .t-acad {{ background:{C["acad_bg"]}; color:{C["acad_c"]}; }}
+    .t-perso {{ background:{C["perso_bg"]}; color:{C["perso_c"]}; }}
+    .t-pro {{ background:{C["pro_bg"]}; color:{C["pro_c"]}; }}
 
     /* Completion bar */
-    .cbar { width:100%; height:5px; background:#27272a; border-radius:3px; overflow:hidden; margin:6px 0; }
-    .cfill { height:100%; border-radius:3px; }
-
-    /* Section headers */
-    .sec-h { font-size:1.1rem; font-weight:700; color:#7c6cf0; margin:16px 0 8px 0;
-             padding-bottom:6px; border-bottom:1px solid #27272a; }
+    .cbar {{ width:100%; height:5px; background:{C["cbar_bg"]}; border-radius:3px; overflow:hidden; margin:6px 0; }}
+    .cfill {{ height:100%; border-radius:3px; }}
 
     /* Detail label */
-    .dlabel { font-size:0.7rem; font-weight:700; color:#71717a; text-transform:uppercase;
-              letter-spacing:0.07em; margin-bottom:2px; }
+    .dlabel {{ font-size:0.7rem; font-weight:700; color:{C["dlabel"]} !important; text-transform:uppercase;
+              letter-spacing:0.07em; margin-bottom:2px; }}
 
-    /* Card */
-    .pcard { background:#18181b; border:1px solid #27272a; border-radius:10px; padding:18px;
-             margin-bottom:12px; transition:border-color 0.2s; }
-    .pcard:hover { border-color:#3f3f46; }
+    /* Hide default footer */
+    footer {{ visibility:hidden; }}
+    .stDeployButton {{ display:none; }}
 
-    /* Hide default Streamlit footer */
-    footer { visibility:hidden; }
-    .stDeployButton { display:none; }
+    /* Dividers */
+    hr {{ border-color: {C["border"]} !important; }}
 
-    /* Sidebar spacing */
-    section[data-testid="stSidebar"] > div { padding-top: 1rem; }
+    /* Tables */
+    table {{ background: {C["bg2"]}; }}
+    th {{ background: {C["bg3"]} !important; color: {C["text"]} !important; }}
+    td {{ color: {C["text2"]} !important; border-color: {C["border"]} !important; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -147,6 +220,12 @@ with st.sidebar:
             nav("profil")
 
     st.divider()
+
+    # ── Toggle thème ──
+    theme_label = "☀️ Mode clair" if st.session_state.theme == "dark" else "🌙 Mode sombre"
+    if st.button(theme_label, use_container_width=True, key="theme_toggle"):
+        st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
+        st.rerun()
 
     if st.session_state.is_admin:
         st.success("🛡️ Admin connecté")
