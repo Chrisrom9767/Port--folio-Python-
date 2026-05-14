@@ -66,11 +66,54 @@ st.markdown(f"""
     /* ── Forcer le thème sur tout Streamlit ── */
     .stApp {{ background-color: {C["bg"]}; color: {C["text"]}; }}
     header[data-testid="stHeader"] {{ background-color: {C["bg"]}; }}
-    section[data-testid="stSidebar"] {{ background-color: {C["sidebar_bg"]}; }}
-    section[data-testid="stSidebar"] * {{ color: {C["sidebar_text"]}; }}
+
+    /* ── SIDEBAR — forcer toutes les couleurs ── */
+    section[data-testid="stSidebar"] {{
+        background-color: {C["sidebar_bg"]} !important;
+    }}
     section[data-testid="stSidebar"] > div {{ padding-top: 1rem; }}
 
-    .stMarkdown, .stText, .stCaption, p, span, li, td, th, label, h1, h2, h3, h4 {{
+    /* Texte sidebar */
+    section[data-testid="stSidebar"] * {{
+        color: {C["sidebar_text"]} !important;
+    }}
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] h4,
+    section[data-testid="stSidebar"] .stMarkdown,
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"],
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
+        color: {C["sidebar_text"]} !important;
+    }}
+    /* Boutons sidebar */
+    section[data-testid="stSidebar"] button[kind="secondary"] {{
+        color: {C["sidebar_text"]} !important;
+        border-color: {C["border"]} !important;
+        background-color: transparent !important;
+    }}
+    section[data-testid="stSidebar"] button[kind="secondary"]:hover {{
+        background-color: {C["bg2"]} !important;
+        border-color: {C["border_h"]} !important;
+    }}
+    /* Caption sidebar */
+    section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {{
+        color: {C["text3"]} !important;
+    }}
+    /* Divider sidebar */
+    section[data-testid="stSidebar"] hr {{
+        border-color: {C["border"]} !important;
+    }}
+    /* Toggle dans sidebar */
+    section[data-testid="stSidebar"] .stToggle label span {{
+        color: {C["sidebar_text"]} !important;
+    }}
+
+    /* ── Contenu principal ── */
+    .stMarkdown, .stText, p, span, li, td, th, label, h1, h2, h3, h4 {{
         color: {C["text"]} !important;
     }}
 
@@ -130,6 +173,31 @@ st.markdown(f"""
     table {{ background: {C["bg2"]}; }}
     th {{ background: {C["bg3"]} !important; color: {C["text"]} !important; }}
     td {{ color: {C["text2"]} !important; border-color: {C["border"]} !important; }}
+
+    /* Alerts / info / success boxes */
+    [data-testid="stAlert"] p,
+    [data-testid="stAlert"] span,
+    .stAlert p {{
+        color: inherit !important;
+    }}
+
+    /* Forms */
+    [data-testid="stForm"] {{
+        background-color: {C["bg2"]} !important;
+        border-color: {C["border"]} !important;
+    }}
+
+    /* Boutons primaires — garder le texte blanc */
+    button[kind="primary"],
+    button[kind="primary"] p,
+    button[kind="primary"] span {{
+        color: #ffffff !important;
+    }}
+
+    /* Toggle switch label */
+    .stToggle > label > div > p {{
+        color: {C["sidebar_text"]} !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -221,10 +289,15 @@ with st.sidebar:
 
     st.divider()
 
-    # ── Toggle thème ──
-    theme_label = "☀️ Mode clair" if st.session_state.theme == "dark" else "🌙 Mode sombre"
-    if st.button(theme_label, use_container_width=True, key="theme_toggle"):
-        st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
+    # ── Toggle thème clair/sombre ──
+    is_light = st.toggle(
+        "☀️ Mode clair",
+        value=(st.session_state.theme == "light"),
+        key="theme_switch"
+    )
+    new_theme = "light" if is_light else "dark"
+    if new_theme != st.session_state.theme:
+        st.session_state.theme = new_theme
         st.rerun()
 
     if st.session_state.is_admin:
